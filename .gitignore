@@ -1,0 +1,15 @@
+*.txt
+*ScreenShots
+/logs/*
+/.idea*
+/target/*
+/LogIssues/*
+/test-output/*
+/.classpath
+/.project
+/.settings/*
+/target/
+/hsql*
+*.iml
+*.html
+/java_pid*
