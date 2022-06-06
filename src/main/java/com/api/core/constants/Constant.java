@@ -13,6 +13,8 @@ public class Constant {
 
     public static class User{
         public static final String createUserWithArray = "user/createWithArray";
+        public static final String updateUserName = "user/{username}";
+        public static final String getUserName = "user/{username}";
     }
 
     public static class RequestResponseConstant {

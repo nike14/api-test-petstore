@@ -6,6 +6,7 @@ import com.api.core.utils.Request;
 import com.api.core.utils.RequestExecutor;
 import com.api.helper.BuildRequest;
 import com.api.helper.TestSuiteHelper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
@@ -21,14 +22,21 @@ public class UserTests {
     TestSuiteHelper testSuiteHelper = new TestSuiteHelper();
     List<CreateUserPojo> userBody;
     RequestExecutor requestExecutor = new RequestExecutor();
+    CreateUserPojo cuObj;
 
+    /*
+    - Jackson's lib converts "username" key to "userName" and endpoint gives success response
+    - When we search that username doesn't appear in get API call.
+    - This is issue with endpoint and Jackson's lib.
+
+    Solution- Use Gson API for conversion.
+    */
     @Test(priority = 1)
-    public void createUser(ITestContext testContext) throws Exception {
-        userBody= testSuiteHelper.getUserBody();
-        System.out.println(userBody.get(0).getUserName());
-        String user= new com.google.gson.Gson().toJson(userBody);
-        //ObjectMapper obj = new ObjectMapper();
-        //String user = obj.writerWithDefaultPrettyPrinter().writeValueAsString(userBody);
+    public void endPointIssueForCreateUser(ITestContext testContext) throws JsonProcessingException {
+        cuObj = testSuiteHelper.getUserBody();
+        userBody = testSuiteHelper.addUserObjectToList(cuObj);
+        ObjectMapper obj = new ObjectMapper();
+        String user = obj.writerWithDefaultPrettyPrinter().writeValueAsString(userBody);
         BuildRequest buildRequest = new BuildRequest();
         buildRequest.setContentType(ContentType.JSON);
         buildRequest.setRequestBody(user);
@@ -38,6 +46,56 @@ public class UserTests {
         Request apiRequest = buildRequest.buildRequestObject();
         Response apiResponse = requestExecutor.executeRequest(apiRequest);
         testSuiteHelper.setITextContext(testContext, apiRequest, apiResponse);
-        Assert.assertEquals(apiResponse.getStatusCode() , 200 , "Correct status code returned");
+        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+    }
+
+    @Test(priority = 2)
+    public void createUser(ITestContext testContext) {
+        cuObj = testSuiteHelper.getUserBody();
+        userBody = testSuiteHelper.addUserObjectToList(cuObj);
+        System.out.println(userBody.get(0).getUserName());
+        String user = new com.google.gson.Gson().toJson(userBody);
+        BuildRequest buildRequest = new BuildRequest();
+        buildRequest.setContentType(ContentType.JSON);
+        buildRequest.setRequestBody(user);
+        buildRequest.setRequestType(Method.POST);
+        buildRequest.setBaseUrl(Constant.baseUri);
+        buildRequest.setApiPath(Constant.User.createUserWithArray);
+        Request apiRequest = buildRequest.buildRequestObject();
+        Response apiResponse = requestExecutor.executeRequest(apiRequest);
+        testSuiteHelper.setITextContext(testContext, apiRequest, apiResponse);
+        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+    }
+
+    @Test(priority = 3)
+    public void updateUserName(ITestContext testContext) {
+        String userName = userBody.get(0).getUserName();
+        cuObj = testSuiteHelper.getUserBody();
+        String user = new com.google.gson.Gson().toJson(cuObj);
+        BuildRequest buildRequest = new BuildRequest();
+        buildRequest.setContentType(ContentType.JSON);
+        buildRequest.setRequestBody(user);
+        buildRequest.setRequestType(Method.PUT);
+        buildRequest.setBaseUrl(Constant.baseUri);
+        buildRequest.setApiPath(Constant.User.updateUserName.replace("{username}", userName));
+        Request apiRequest = buildRequest.buildRequestObject();
+        Response apiResponse = requestExecutor.executeRequest(apiRequest);
+        testSuiteHelper.setITextContext(testContext, apiRequest, apiResponse);
+        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+    }
+
+    @Test(priority = 4)
+    public void getUserDetails(ITestContext testContext){
+        String userName = cuObj.getUserName();
+        BuildRequest buildRequest = new BuildRequest();
+        buildRequest.setContentType(ContentType.JSON);
+        buildRequest.setRequestType(Method.GET);
+        buildRequest.setBaseUrl(Constant.baseUri);
+        buildRequest.setApiPath(Constant.User.getUserName.replace("{username}", userName));
+        Request apiRequest = buildRequest.buildRequestObject();
+        Response apiResponse = requestExecutor.executeRequest(apiRequest);
+        testSuiteHelper.setITextContext(testContext, apiRequest, apiResponse);
+        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+        testSuiteHelper.assertGetUser(apiResponse, cuObj);
     }
 }

@@ -8,7 +8,7 @@ import static io.restassured.RestAssured.given;
 
 public class RequestExecutor {
 
-    public Response executeRequest(Request request) throws Exception {
+    public Response executeRequest(Request request) {
         RequestSpecification requestSpecification = generateRequestSpec(request);
         Response response = given().spec(requestSpecification).request(request.requestType);
         return response;
