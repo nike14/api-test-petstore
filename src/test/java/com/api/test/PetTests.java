@@ -93,4 +93,24 @@ public class PetTests {
         Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
         testSuiteHelper.assertGetPetByStatus(apiResponse, createPetPojoList);
     }
+
+    /*Negative scenario
+    Endpoint missing with validation for empty object.
+    Also, no key is mandatory because of this we can't search by status.
+
+    Same issue for post and put pet.
+     */
+    @Test(priority = 5)
+    public void createPetWithoutAnyKey(ITestContext testContext) {
+        BuildRequest buildRequest = new BuildRequest();
+        buildRequest.setContentType(ContentType.JSON);
+        buildRequest.setRequestBody("{}");
+        buildRequest.setRequestType(Method.POST);
+        buildRequest.setBaseUrl(Constant.baseUri);
+        buildRequest.setApiPath(Constant.PetConstant.createPet);
+        Request apiRequest = buildRequest.buildRequestObject();
+        Response apiResponse = requestExecutor.executeRequest(apiRequest);
+        testSuiteHelper.setITextContext(testContext, apiRequest, apiResponse);
+        Assert.assertEquals(apiResponse.getStatusCode(), 400, "Correct status code returned");
+    }
 }
