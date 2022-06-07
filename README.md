@@ -21,19 +21,17 @@ In this example project, REST-assured is used to implement a suite of functional
 * mvn clean compile
 ```
 
-#RUN TESTS
+## RUN TESTS
 To compile and run the tests from the command line enter the command:
 ```
 mvn clean test
 ```
 
-#DEBUG TESTS
+## DEBUG TESTS
 
 Import the generated project into your IDE.
 
 Open the project in your IDE and run the tests contained in one of the aforementioned test classes as you would a testNg test.
-
-
 
 ## Reports
 
