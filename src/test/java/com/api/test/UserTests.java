@@ -55,7 +55,6 @@ public class UserTests {
     public void createUser(ITestContext testContext) {
         cuObj = testSuiteHelper.getUserBody();
         userBody = testSuiteHelper.addUserObjectToList(cuObj);
-        System.out.println(userBody.get(0).getUserName());
         String user = new com.google.gson.Gson().toJson(userBody);
         BuildRequest buildRequest = new BuildRequest();
         buildRequest.setContentType(ContentType.JSON);
