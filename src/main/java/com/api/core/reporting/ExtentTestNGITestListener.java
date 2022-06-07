@@ -74,8 +74,19 @@ public class ExtentTestNGITestListener implements ITestListener {
         Response response = (Response) iTestResult.getTestContext().getAttribute(Constant.RequestResponseConstant.RESPONSE);
         Long timer = (Long) iTestResult.getTestContext().getAttribute(Constant.RequestResponseConstant.RESPONSE_TIME);
         requestUrl = request.baseUrl + request.apiPath;
-        if (request.queryParameters != null)
-            requestUrl = requestUrl + "/?" + request.queryParameters.toString();
+        String params= "";
+        int count =0;
+        if (request.queryParameters != null) {
+            for(String key: request.queryParameters.keySet()){
+                params= params + key + "=";
+                params = params + request.queryParameters.get(key);
+                if (count > 1){
+                    params = params + "&";
+                }
+                count++;
+            }
+            requestUrl = requestUrl + "/?" + params;
+        }
         test.get().log(testStatus, requestUrl);
         test.get().log(Status.INFO, "Request Type : " + request.requestType.name());
         test.get().log(Status.INFO, "Response Time : " + String.valueOf(timer) + "ms");

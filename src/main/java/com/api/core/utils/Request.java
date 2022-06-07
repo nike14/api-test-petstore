@@ -28,5 +28,4 @@ public class Request {
         this.requestBody = requestBody;
         this.queryParameters = queryParameters;
     }
-
 }

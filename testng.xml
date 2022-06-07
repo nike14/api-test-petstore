@@ -7,12 +7,14 @@
                 class-name="com.api.core.reporting.ExtentTestNGITestListener">
         </listener>
     </listeners>
-    <test name="Api Tests">
+    <test name="User Tests">
         <classes>
             <class name="com.api.test.UserTests"/>
+        </classes>
+    </test>
+    <test name="Pet Tests">
+        <classes>
             <class name="com.api.test.PetTests"/>
         </classes>
     </test>
-
-
 </suite>

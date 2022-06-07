@@ -17,28 +17,25 @@ public class RequestExecutor {
     private RequestSpecification generateRequestSpec(Request request) {
         RequestSpecBuilder builder = new RequestSpecBuilder();
 
-        if (request.baseUrl != null) {
+        if (request.baseUrl != null)
             builder.setBaseUri(request.baseUrl);
-        }
 
-        if (request.apiPath != null) {
+
+        if (request.apiPath != null)
             builder.setBasePath(request.apiPath);
-        }
 
-        if (request.contentType != null) {
+        if (request.contentType != null)
             builder.setContentType(request.contentType);
-        }
 
-        if (request.requestBody != null) {
+        if (request.requestBody != null)
             builder.setBody(request.requestBody);
-        }
 
-        if (request.headers != null) {
+
+        if (request.headers != null)
             builder.addHeaders(request.headers);
-        }
-        if (request.queryParameters != null) {
+
+        if (request.queryParameters != null)
             builder.addQueryParams(request.queryParameters);
-        }
 
         RequestSpecification requestSpec = builder.build();
         return requestSpec;
