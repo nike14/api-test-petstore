@@ -24,7 +24,7 @@ In this example project, REST-assured is used to implement a suite of functional
 ## RUN TESTS
 To compile and run the tests from the command line enter the command:
 ```
-mvn clean test
+* mvn clean test
 ```
 
 ## DEBUG TESTS
