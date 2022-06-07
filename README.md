@@ -4,7 +4,7 @@ This project provides an example of how to use open source tools like RESTAssure
 
 RESTAssured runs on top of existing Java testing frameworks (JUnit/testNg), and includes a DSL for building API requests and asserting API responses.
 
-In this example project, REST-assured is used to implement a suite of functional tests for a couple of REST APIs hosted.
+In this example project, REST-assured is used to implement a suite of functional tests with builder design pattern for a couple of REST APIs hosted.
 
 ## Requirements
 ```
