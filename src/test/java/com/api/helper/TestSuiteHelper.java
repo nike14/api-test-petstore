@@ -6,7 +6,10 @@ import com.api.core.pojo.CreateUserPojo;
 import com.api.core.pojo.PetCategoryPojo;
 import com.api.core.pojo.PetTagPojo;
 import com.api.core.utils.Request;
+import com.api.core.utils.RequestExecutor;
 import com.github.javafaker.Faker;
+import io.restassured.http.ContentType;
+import io.restassured.http.Method;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.json.JSONObject;
@@ -134,5 +137,75 @@ public class TestSuiteHelper {
         if (!value) {
             Assert.fail("Not able to search name in get list");
         }
+    }
+
+    public List<CreatePetPojo> createPet(RequestExecutor requestExecutor, ITestContext testContext, String userType){
+        List<CreatePetPojo> createPetPojoList = new ArrayList<>();
+        CreatePetPojo cpObj = getPetBody(userType);
+        createPetPojoList.add(cpObj);
+        String petBody = new com.google.gson.Gson().toJson(cpObj);
+        BuildRequest buildRequest = new BuildRequest();
+        buildRequest.setContentType(ContentType.JSON);
+        buildRequest.setRequestBody(petBody);
+        buildRequest.setRequestType(Method.POST);
+        buildRequest.setBaseUrl(Constant.baseUri);
+        buildRequest.setApiPath(Constant.PetConstant.createPet);
+        Request apiRequest = buildRequest.buildRequestObject();
+        Response apiResponse = requestExecutor.executeRequest(apiRequest);
+        setITextContext(testContext, apiRequest, apiResponse);
+        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+        return createPetPojoList;
+    }
+
+    public List<CreatePetPojo> updatePet(RequestExecutor requestExecutor, ITestContext testContext, List<CreatePetPojo> createPetPojoList){
+        //Update pet values
+        String name = createPetPojoList.get(0).getName();
+        CreatePetPojo cpObj = getPetBody(name);
+        String petBody = new com.google.gson.Gson().toJson(cpObj);
+        BuildRequest buildRequest = new BuildRequest();
+        buildRequest.setContentType(ContentType.JSON);
+        buildRequest.setRequestBody(petBody);
+        buildRequest.setRequestType(Method.PUT);
+        buildRequest.setBaseUrl(Constant.baseUri);
+        buildRequest.setApiPath(Constant.PetConstant.createPet);
+        Request apiRequest = buildRequest.buildRequestObject();
+        Response apiResponse = requestExecutor.executeRequest(apiRequest);
+        setITextContext(testContext, apiRequest, apiResponse);
+        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+        return createPetPojoList;
+    }
+
+    public List<CreateUserPojo> createUser(RequestExecutor requestExecutor, ITestContext testContext) {
+        CreateUserPojo cuObj = getUserBody();
+        List<CreateUserPojo> userBody = addUserObjectToList(cuObj);
+        String user = new com.google.gson.Gson().toJson(userBody);
+        BuildRequest buildRequest = new BuildRequest();
+        buildRequest.setContentType(ContentType.JSON);
+        buildRequest.setRequestBody(user);
+        buildRequest.setRequestType(Method.POST);
+        buildRequest.setBaseUrl(Constant.baseUri);
+        buildRequest.setApiPath(Constant.User.createUserWithArray);
+        Request apiRequest = buildRequest.buildRequestObject();
+        Response apiResponse = requestExecutor.executeRequest(apiRequest);
+        setITextContext(testContext, apiRequest, apiResponse);
+        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+        return userBody;
+    }
+
+    public CreateUserPojo updateUser(RequestExecutor requestExecutor, ITestContext testContext, List<CreateUserPojo> userBody){
+        String userName = userBody.get(0).getUserName();
+        CreateUserPojo cuObj = getUserBody();
+        String user = new com.google.gson.Gson().toJson(cuObj);
+        BuildRequest buildRequest = new BuildRequest();
+        buildRequest.setContentType(ContentType.JSON);
+        buildRequest.setRequestBody(user);
+        buildRequest.setRequestType(Method.PUT);
+        buildRequest.setBaseUrl(Constant.baseUri);
+        buildRequest.setApiPath(Constant.User.updateUserName.replace("{username}", userName));
+        Request apiRequest = buildRequest.buildRequestObject();
+        Response apiResponse = requestExecutor.executeRequest(apiRequest);
+        setITextContext(testContext, apiRequest, apiResponse);
+        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+        return cuObj;
     }
 }

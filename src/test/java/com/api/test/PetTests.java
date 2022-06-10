@@ -13,7 +13,6 @@ import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,62 +21,30 @@ public class PetTests {
 
     TestSuiteHelper testSuiteHelper = new TestSuiteHelper();
     RequestExecutor requestExecutor = new RequestExecutor();
-    List<CreatePetPojo> createPetPojoList = new ArrayList<>();
-    CreatePetPojo cpObj;
 
     @Test(priority = 1)
     public void createFirstPet(ITestContext testContext) {
-        cpObj = testSuiteHelper.getPetBody(Constant.PetConstant.newUser);
-        createPetPojoList.add(cpObj);
-        String petBody = new com.google.gson.Gson().toJson(cpObj);
-        BuildRequest buildRequest = new BuildRequest();
-        buildRequest.setContentType(ContentType.JSON);
-        buildRequest.setRequestBody(petBody);
-        buildRequest.setRequestType(Method.POST);
-        buildRequest.setBaseUrl(Constant.baseUri);
-        buildRequest.setApiPath(Constant.PetConstant.createPet);
-        Request apiRequest = buildRequest.buildRequestObject();
-        Response apiResponse = requestExecutor.executeRequest(apiRequest);
-        testSuiteHelper.setITextContext(testContext, apiRequest, apiResponse);
-        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+        testSuiteHelper.createPet(requestExecutor, testContext, Constant.PetConstant.newUser);
     }
 
     @Test(priority = 2)
     public void createSecondPet(ITestContext testContext) {
-        cpObj = testSuiteHelper.getPetBody(Constant.PetConstant.newUser);
-        createPetPojoList.add(cpObj);
-        String petBody = new com.google.gson.Gson().toJson(cpObj);
-        BuildRequest buildRequest = new BuildRequest();
-        buildRequest.setContentType(ContentType.JSON);
-        buildRequest.setRequestBody(petBody);
-        buildRequest.setRequestType(Method.POST);
-        buildRequest.setBaseUrl(Constant.baseUri);
-        buildRequest.setApiPath(Constant.PetConstant.createPet);
-        Request apiRequest = buildRequest.buildRequestObject();
-        Response apiResponse = requestExecutor.executeRequest(apiRequest);
-        testSuiteHelper.setITextContext(testContext, apiRequest, apiResponse);
-        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+        testSuiteHelper.createPet(requestExecutor, testContext, Constant.PetConstant.newUser);
     }
 
     @Test(priority = 3)
     public void updateFirstPet(ITestContext testContext) {
-        String name = createPetPojoList.get(0).getName();
-        cpObj = testSuiteHelper.getPetBody(name);
-        String petBody = new com.google.gson.Gson().toJson(cpObj);
-        BuildRequest buildRequest = new BuildRequest();
-        buildRequest.setContentType(ContentType.JSON);
-        buildRequest.setRequestBody(petBody);
-        buildRequest.setRequestType(Method.PUT);
-        buildRequest.setBaseUrl(Constant.baseUri);
-        buildRequest.setApiPath(Constant.PetConstant.createPet);
-        Request apiRequest = buildRequest.buildRequestObject();
-        Response apiResponse = requestExecutor.executeRequest(apiRequest);
-        testSuiteHelper.setITextContext(testContext, apiRequest, apiResponse);
-        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+        List<CreatePetPojo> createPetPojoList = testSuiteHelper.createPet(requestExecutor, testContext, Constant.PetConstant.newUser);
+        testSuiteHelper.updatePet(requestExecutor, testContext, createPetPojoList);
     }
 
     @Test(priority = 4)
     public void getPetByStatus(ITestContext testContext) {
+        //Create pet
+        List<CreatePetPojo> createPetPojoList = testSuiteHelper.createPet(requestExecutor, testContext, Constant.PetConstant.newUser);
+        //Update pet
+        createPetPojoList = testSuiteHelper.updatePet(requestExecutor, testContext, createPetPojoList);
+        //Get pet details
         String statusValue = createPetPojoList.get(0).getStatus();
         Map<String,Object> queryParams = new HashMap<>();
         queryParams.put("status", statusValue);

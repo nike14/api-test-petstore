@@ -8,7 +8,6 @@ import com.api.helper.BuildRequest;
 import com.api.helper.TestSuiteHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
@@ -16,15 +15,12 @@ import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class UserTests {
     TestSuiteHelper testSuiteHelper = new TestSuiteHelper();
-    List<CreateUserPojo> userBody;
     RequestExecutor requestExecutor = new RequestExecutor();
-    CreateUserPojo cuObj;
 
     /*
     - Jackson's lib converts "username" key to "userName" and endpoint gives success response
@@ -35,8 +31,8 @@ public class UserTests {
     */
     @Test(priority = 1)
     public void endPointIssueForCreateUser(ITestContext testContext) throws JsonProcessingException {
-        cuObj = testSuiteHelper.getUserBody();
-        userBody = testSuiteHelper.addUserObjectToList(cuObj);
+        CreateUserPojo cuObj = testSuiteHelper.getUserBody();
+        List<CreateUserPojo> userBody = testSuiteHelper.addUserObjectToList(cuObj);
         ObjectMapper obj = new ObjectMapper();
         String user = obj.writerWithDefaultPrettyPrinter().writeValueAsString(userBody);
         BuildRequest buildRequest = new BuildRequest();
@@ -53,40 +49,19 @@ public class UserTests {
 
     @Test(priority = 2)
     public void createUser(ITestContext testContext) {
-        cuObj = testSuiteHelper.getUserBody();
-        userBody = testSuiteHelper.addUserObjectToList(cuObj);
-        String user = new com.google.gson.Gson().toJson(userBody);
-        BuildRequest buildRequest = new BuildRequest();
-        buildRequest.setContentType(ContentType.JSON);
-        buildRequest.setRequestBody(user);
-        buildRequest.setRequestType(Method.POST);
-        buildRequest.setBaseUrl(Constant.baseUri);
-        buildRequest.setApiPath(Constant.User.createUserWithArray);
-        Request apiRequest = buildRequest.buildRequestObject();
-        Response apiResponse = requestExecutor.executeRequest(apiRequest);
-        testSuiteHelper.setITextContext(testContext, apiRequest, apiResponse);
-        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+        testSuiteHelper.createUser(requestExecutor, testContext);
     }
 
     @Test(priority = 3)
     public void updateUserName(ITestContext testContext) {
-        String userName = userBody.get(0).getUserName();
-        cuObj = testSuiteHelper.getUserBody();
-        String user = new com.google.gson.Gson().toJson(cuObj);
-        BuildRequest buildRequest = new BuildRequest();
-        buildRequest.setContentType(ContentType.JSON);
-        buildRequest.setRequestBody(user);
-        buildRequest.setRequestType(Method.PUT);
-        buildRequest.setBaseUrl(Constant.baseUri);
-        buildRequest.setApiPath(Constant.User.updateUserName.replace("{username}", userName));
-        Request apiRequest = buildRequest.buildRequestObject();
-        Response apiResponse = requestExecutor.executeRequest(apiRequest);
-        testSuiteHelper.setITextContext(testContext, apiRequest, apiResponse);
-        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+        List<CreateUserPojo> userBody = testSuiteHelper.createUser(requestExecutor, testContext);
+        testSuiteHelper.updateUser(requestExecutor,testContext, userBody);
     }
 
     @Test(priority = 4)
     public void getUserDetails(ITestContext testContext){
+        List<CreateUserPojo> userBody = testSuiteHelper.createUser(requestExecutor, testContext);
+        CreateUserPojo cuObj = testSuiteHelper.updateUser(requestExecutor,testContext, userBody);
         String userName = cuObj.getUserName();
         BuildRequest buildRequest = new BuildRequest();
         buildRequest.setContentType(ContentType.JSON);
