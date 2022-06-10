@@ -14,7 +14,7 @@ import org.testng.ITestResult;
 
 public class ExtentTestNGITestListener implements ITestListener {
 
-    private static ExtentReports extent = ExtentManager.createInstance(Constant.REPORTS_PATH);
+    private static ExtentReports extent = ExtentManager.getInstance(Constant.REPORTS_PATH);
     private static ThreadLocal<ExtentTest> parentTest = new ThreadLocal();
     private static ThreadLocal<ExtentTest> test = new ThreadLocal();
     ExtentTest parent;

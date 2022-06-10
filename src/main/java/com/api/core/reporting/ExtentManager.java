@@ -13,6 +13,12 @@ public class ExtentManager {
 
     private static ExtentReports extent;
 
+    public static ExtentReports getInstance(String directoryName) {
+        if (extent == null)
+            createInstance(directoryName);
+        return extent;
+    }
+
     public static ExtentReports createInstance(String directoryName) {
         File directory = new File(directoryName);
         if (! directory.exists()){
