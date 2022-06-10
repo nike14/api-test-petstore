@@ -5,13 +5,23 @@ import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import com.aventstack.extentreports.reporter.configuration.ChartLocation;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 
+import java.io.File;
+import java.util.Date;
+
 
 public class ExtentManager {
 
     private static ExtentReports extent;
 
-    public static ExtentReports createInstance(String fileName) {
-        ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(fileName);
+    public static ExtentReports createInstance(String directoryName) {
+        File directory = new File(directoryName);
+        if (! directory.exists()){
+            directory.mkdir();
+        }
+        Date date = new Date();
+        String fileName = date.toString().replace(":", "_").replace(" ", "_") +"_"+"extent.html";
+        String reportPath = directoryName + fileName;
+        ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(reportPath);
         htmlReporter.config().setTestViewChartLocation(ChartLocation.BOTTOM);
         htmlReporter.config().setChartVisibilityOnOpen(true);
         htmlReporter.config().setDocumentTitle("ExtentReports");
