@@ -18,7 +18,9 @@ import org.testng.ITestContext;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TestSuiteHelper {
@@ -207,5 +209,23 @@ public class TestSuiteHelper {
         setITextContext(testContext, apiRequest, apiResponse);
         Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
         return cuObj;
+    }
+
+    public void verifyPetByStatus(RequestExecutor requestExecutor, ITestContext testContext,List<CreatePetPojo> createPetPojoList){
+        //Get pet details
+        String statusValue = createPetPojoList.get(0).getStatus();
+        Map<String,Object> queryParams = new HashMap<>();
+        queryParams.put("status", statusValue);
+        BuildRequest buildRequest = new BuildRequest();
+        buildRequest.setContentType(ContentType.JSON);
+        buildRequest.setRequestType(Method.GET);
+        buildRequest.setBaseUrl(Constant.baseUri);
+        buildRequest.setApiPath(Constant.PetConstant.getPet);
+        buildRequest.setQueryParameters(queryParams);
+        Request apiRequest = buildRequest.buildRequestObject();
+        Response apiResponse = requestExecutor.executeRequest(apiRequest);
+        setITextContext(testContext, apiRequest, apiResponse);
+        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
+        assertGetPetByStatus(apiResponse, createPetPojoList);
     }
 }

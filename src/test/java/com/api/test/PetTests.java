@@ -13,9 +13,7 @@ import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.Test;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PetTests {
 
@@ -23,42 +21,22 @@ public class PetTests {
     RequestExecutor requestExecutor = new RequestExecutor();
 
     @Test(priority = 1)
-    public void createFirstPet(ITestContext testContext) {
-        testSuiteHelper.createPet(requestExecutor, testContext, Constant.PetConstant.newUser);
+    public void createAndVerifyFirstPet(ITestContext testContext) {
+        List<CreatePetPojo> createPetPojoList = testSuiteHelper.createPet(requestExecutor, testContext, Constant.PetConstant.newUser);
+        testSuiteHelper.verifyPetByStatus(requestExecutor, testContext, createPetPojoList);
     }
 
     @Test(priority = 2)
-    public void createSecondPet(ITestContext testContext) {
-        testSuiteHelper.createPet(requestExecutor, testContext, Constant.PetConstant.newUser);
+    public void createAndVerifySecondPet(ITestContext testContext) {
+        List<CreatePetPojo> createPetPojoList = testSuiteHelper.createPet(requestExecutor, testContext, Constant.PetConstant.newUser);
+        testSuiteHelper.verifyPetByStatus(requestExecutor, testContext, createPetPojoList);
     }
 
     @Test(priority = 3)
-    public void updateFirstPet(ITestContext testContext) {
+    public void updateAndVerifyFirstPet(ITestContext testContext) {
         List<CreatePetPojo> createPetPojoList = testSuiteHelper.createPet(requestExecutor, testContext, Constant.PetConstant.newUser);
-        testSuiteHelper.updatePet(requestExecutor, testContext, createPetPojoList);
-    }
-
-    @Test(priority = 4)
-    public void getPetByStatus(ITestContext testContext) {
-        //Create pet
-        List<CreatePetPojo> createPetPojoList = testSuiteHelper.createPet(requestExecutor, testContext, Constant.PetConstant.newUser);
-        //Update pet
         createPetPojoList = testSuiteHelper.updatePet(requestExecutor, testContext, createPetPojoList);
-        //Get pet details
-        String statusValue = createPetPojoList.get(0).getStatus();
-        Map<String,Object> queryParams = new HashMap<>();
-        queryParams.put("status", statusValue);
-        BuildRequest buildRequest = new BuildRequest();
-        buildRequest.setContentType(ContentType.JSON);
-        buildRequest.setRequestType(Method.GET);
-        buildRequest.setBaseUrl(Constant.baseUri);
-        buildRequest.setApiPath(Constant.PetConstant.getPet);
-        buildRequest.setQueryParameters(queryParams);
-        Request apiRequest = buildRequest.buildRequestObject();
-        Response apiResponse = requestExecutor.executeRequest(apiRequest);
-        testSuiteHelper.setITextContext(testContext, apiRequest, apiResponse);
-        Assert.assertEquals(apiResponse.getStatusCode(), 200, "Correct status code returned");
-        testSuiteHelper.assertGetPetByStatus(apiResponse, createPetPojoList);
+        testSuiteHelper.verifyPetByStatus(requestExecutor, testContext, createPetPojoList);
     }
 
     /*Negative scenario
